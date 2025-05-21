@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username   String    @id @db.VarChar(100)
+  name       String    @db.VarChar(100)
+  birth_date DateTime  @db.Date
+  age        String    @db.VarChar(5)
+  motivation String    @db.VarChar(100)
+  password   String    @db.VarChar(100)
+  Answer     Answer[]
+  reviews    reviews[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id       Int      @id
+  question String   @db.VarChar(200)
+  AnswerBy Answer[]
+
+  @@map("question")
+}
+
+model Answer {
+  user_id   String   @db.VarChar(100)
+  quiz_id   Int
+  answer    String   @db.VarChar(10)
+  createdAt DateTime @db.DateTime(0)
+  quiz      Quiz     @relation(fields: [quiz_id], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [user_id], references: [username], onDelete: Cascade)
+
+  @@id([user_id, quiz_id])
+  @@index([quiz_id], map: "answers_quiz_id_fkey")
+  @@map("answers")
+}
+
+model reviews {
+  id      Int    @id @default(autoincrement())
+  review  String @db.VarChar(100)
+  user_id String @db.VarChar(100)
+  users   User   @relation(fields: [user_id], references: [username], onDelete: Cascade)
+
+  @@index([user_id], map: "reviews_user_id_fkey")
+}
