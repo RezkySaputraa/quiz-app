@@ -23,6 +23,7 @@ model User {
 model Quiz {
   id       Int      @id
   question String   @db.VarChar(200)
+  correct_answer String
   AnswerBy Answer[]
 
   @@map("question")
